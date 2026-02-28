@@ -1,380 +1,582 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black M | Continue NIS2-Monitoring voor MKB</title>
-    <style>
-        /* --- CSS STYLES --- */
-        :root {
-            --bg-color: #0a0a0c; /* Bijna zwart, zeer donkergrijs */
-            --text-color: #e0e0e0;
-            --accent-color: #00ff41; /* 'Matrix' Groen - straalt techniek en actie uit */
-            --secondary-bg: #141417;
-            --border-color: #2a2a30;
-            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Black M — NIS2 Compliance & Cybersecurity</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-        /* Container voor nette uitlijning */
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+  <style>
+    :root {
+      --blue: #4f8ef7;
+      --blue-dim: rgba(79,142,247,0.12);
+      --border: rgba(255,255,255,0.07);
+    }
 
-        /* --- Header / Navigatie --- */
-        header {
-            background-color: rgba(10, 10, 12, 0.95);
-            padding: 20px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--border-color);
-        }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Inter Tight', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    /* Cursor */
+    #cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--blue); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform 0.15s ease;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid rgba(79,142,247,0.35); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: border-color 0.3s, transform 0.3s;
+    }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-            letter-spacing: 1px;
-        }
+    /* Canvas */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
 
-        .logo span {
-            color: var(--accent-color);
-        }
+    /* Nav */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.4rem 3rem;
+      display: flex; justify-content: space-between; align-items: center;
+      backdrop-filter: blur(24px);
+      background: rgba(0,0,0,0.55);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.04em; }
+    .logo span { color: var(--blue); }
+    .nav-links a {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: rgba(255,255,255,0.35); text-decoration: none;
+      margin-left: 2rem; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--blue); }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
+    section { position: relative; z-index: 1; }
 
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: color 0.3s;
-        }
+    /* Hero */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding: 9rem 3rem 5rem;
+    }
+    .hero-label {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 2rem; opacity: 0;
+    }
+    .hero-title {
+      font-size: clamp(3.2rem, 8.5vw, 9rem); font-weight: 900;
+      line-height: 0.9; letter-spacing: -0.055em;
+      max-width: 1000px; opacity: 0;
+    }
+    .hero-title .accent { color: var(--blue); }
+    .hero-title .stroke {
+      -webkit-text-stroke: 1.5px rgba(255,255,255,0.22);
+      color: transparent;
+    }
+    .hero-sub {
+      margin-top: 2.5rem;
+      font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+      color: rgba(255,255,255,0.4); font-weight: 300;
+      max-width: 440px; line-height: 1.7; opacity: 0;
+    }
 
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
+    /* Form */
+    .cta-form { margin-top: 3rem; display: flex; max-width: 460px; opacity: 0; }
+    .cta-form input {
+      flex: 1; background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1); border-right: none;
+      color: #fff; padding: 0.9rem 1.2rem;
+      font-family: 'Space Mono', monospace; font-size: 0.72rem;
+      outline: none; transition: border-color 0.3s, background 0.3s;
+    }
+    .cta-form input::placeholder { color: rgba(255,255,255,0.2); }
+    .cta-form input:focus {
+      border-color: rgba(79,142,247,0.5);
+      background: rgba(79,142,247,0.04);
+    }
+    .cta-form button {
+      background: var(--blue); color: #fff; border: none;
+      padding: 0.9rem 1.6rem;
+      font-family: 'Space Mono', monospace; font-size: 0.67rem;
+      font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: none; transition: background 0.25s, color 0.25s, letter-spacing 0.25s;
+      white-space: nowrap;
+    }
+    .cta-form button:hover { background: #fff; color: #000; letter-spacing: 0.18em; }
 
-        /* --- Hero Sectie (Boven de vouw) --- */
-        .hero {
-            padding: 180px 0 100px; /* Extra padding boven voor de vaste header */
-            text-align: center;
-            background: radial-gradient(circle at center, #1a1a22 0%, #0a0a0c 70%);
-        }
+    /* Ticker */
+    .ticker-wrap {
+      overflow: hidden; padding: 0.8rem 0;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      position: relative; z-index: 2;
+    }
+    .ticker {
+      display: flex; gap: 4rem;
+      animation: ticker 28s linear infinite; white-space: nowrap;
+    }
+    .ticker span {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.18);
+    }
+    .ticker span.hi { color: rgba(79,142,247,0.75); }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        .hero h1 {
-            font-size: 48px;
-            line-height: 1.2;
-            margin-bottom: 20px;
-            color: #fff;
-        }
+    /* Services */
+    #services { padding: 8rem 3rem; }
+    .section-label {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-size: clamp(2.2rem, 4.5vw, 4.5rem); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 0.95;
+      max-width: 620px; margin-bottom: 4.5rem;
+    }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1px; background: var(--border);
+    }
+    .service-card {
+      padding: 2.5rem; background: #000;
+      position: relative; overflow: hidden; transition: background 0.35s;
+    }
+    .service-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: var(--blue-dim); opacity: 0; transition: opacity 0.35s;
+    }
+    .service-card:hover { background: #050a14; }
+    .service-card:hover::after { opacity: 1; }
+    .card-bar {
+      width: 24px; height: 2px; background: var(--blue); margin-bottom: 1.5rem;
+      transition: width 0.35s ease;
+    }
+    .service-card:hover .card-bar { width: 48px; }
+    .card-number {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: rgba(79,142,247,0.45); letter-spacing: 0.15em; margin-bottom: 0.75rem;
+      position: relative; z-index: 1;
+    }
+    .card-title {
+      font-size: 1.3rem; font-weight: 900; letter-spacing: -0.03em;
+      margin-bottom: 0.85rem; position: relative; z-index: 1;
+    }
+    .card-desc {
+      font-size: 0.82rem; color: rgba(255,255,255,0.35);
+      line-height: 1.7; font-weight: 300; position: relative; z-index: 1;
+    }
 
-        .hero h1 span {
-            color: var(--accent-color);
-        }
+    /* Stats */
+    #stats {
+      padding: 6rem 3rem;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 3rem;
+    }
+    .stat-number {
+      font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 900;
+      letter-spacing: -0.05em; color: #fff; line-height: 1;
+    }
+    .stat-number em { font-style: normal; color: var(--blue); }
+    .stat-label {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: rgba(255,255,255,0.25); letter-spacing: 0.15em;
+      text-transform: uppercase; margin-top: 0.4rem;
+    }
 
-        .hero p {
-            font-size: 20px;
-            color: #a0a0a0;
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
+    /* CTA */
+    #cta-section { padding: 7rem 3rem; }
+    .glass-box {
+      background: rgba(79,142,247,0.04);
+      border: 1px solid rgba(79,142,247,0.15);
+      backdrop-filter: blur(20px);
+      padding: 4.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 3rem; position: relative; overflow: hidden;
+    }
+    .glass-box::before {
+      content: ''; position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--blue) 50%, transparent 100%);
+      opacity: 0.6;
+    }
+    .glass-box::after {
+      content: ''; position: absolute; top: 50%; right: -80px;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(79,142,247,0.07) 0%, transparent 65%);
+      transform: translateY(-50%); pointer-events: none;
+    }
+    .cta-big-title {
+      font-size: clamp(1.8rem, 3.5vw, 3.8rem); font-weight: 900;
+      letter-spacing: -0.04em; line-height: 0.95; max-width: 520px;
+    }
+    .cta-big-title span { color: var(--blue); }
+    .cta-big-btn {
+      display: inline-block; background: transparent; color: var(--blue);
+      padding: 1.1rem 2.2rem;
+      border: 1px solid rgba(79,142,247,0.5);
+      font-family: 'Space Mono', monospace; font-size: 0.7rem;
+      font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      text-decoration: none; cursor: none;
+      transition: background 0.25s, color 0.25s, border-color 0.25s;
+      white-space: nowrap; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .cta-big-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-        .btn {
-            display: inline-block;
-            padding: 15px 35px;
-            background-color: var(--accent-color);
-            color: #000;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: transform 0.2s, box-shadow 0.3s;
-        }
+    /* Footer */
+    footer {
+      padding: 2rem 3rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 1;
+    }
+    .footer-copy {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: rgba(255,255,255,0.18); letter-spacing: 0.05em;
+    }
+    .footer-copy span { color: rgba(79,142,247,0.6); }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
-        }
+    /* Scroll pulse */
+    .scroll-indicator {
+      position: absolute; bottom: 2.5rem; left: 3rem;
+      font-family: 'Space Mono', monospace; font-size: 0.55rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.2);
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .scroll-pulse {
+      width: 6px; height: 6px;
+      border: 1px solid rgba(79,142,247,0.5); border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50% { transform: scale(1.7); opacity: 1; }
+    }
 
-        /* --- Features / Waarde Sectie --- */
-        .features {
-            padding: 100px 0;
-            background-color: var(--secondary-bg);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--blue); color: #fff;
+      padding: 0.9rem 1.4rem;
+      font-family: 'Space Mono', monospace; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.05em; z-index: 9000;
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
 
-        .section-title {
-            text-align: center;
-            font-size: 36px;
-            margin-bottom: 60px;
-            color: #fff;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .feature-card {
-            background-color: var(--bg-color);
-            padding: 40px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: border-color 0.3s;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent-color);
-        }
-
-        .feature-icon {
-            font-size: 30px;
-            color: var(--accent-color);
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 22px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .feature-card p {
-            color: #a0a0a0;
-            font-size: 16px;
-        }
-
-        /* --- Privacy Manifest Sectie --- */
-        .privacy {
-            padding: 100px 0;
-            text-align: center;
-        }
-
-        .privacy-box {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: var(--secondary-bg);
-            padding: 50px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            position: relative;
-        }
-
-        .privacy-box::before {
-            content: 'SECURE';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--accent-color);
-            color: #000;
-            padding: 5px 15px;
-            font-weight: bold;
-            font-size: 12px;
-            border-radius: 20px;
-            letter-spacing: 1px;
-        }
-
-        .privacy h2 {
-            font-size: 32px;
-            margin-bottom: 30px;
-            color: #fff;
-        }
-
-        .privacy ul {
-            list-style: none;
-            text-align: left;
-            display: inline-block;
-        }
-
-        .privacy li {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #e0e0e0;
-            display: flex;
-            align-items: center;
-        }
-
-        .privacy li::before {
-            content: '✓';
-            color: var(--accent-color);
-            margin-right: 15px;
-            font-weight: bold;
-            font-size: 20px;
-        }
-
-        /* --- Call to Action / Formulier --- */
-        .cta {
-            padding: 100px 0;
-            background-color: var(--secondary-bg);
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-        }
-
-        .form-box {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .form-box p {
-            margin-bottom: 30px;
-            color: #a0a0a0;
-            font-size: 18px;
-        }
-
-        input[type="email"] {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: #fff;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        input[type="email"]:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        /* --- Footer --- */
-        footer {
-            padding: 40px 0;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* --- Mobiele Responsive Aanpassingen --- */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 32px; }
-            .hero p { font-size: 18px; }
-            .nav-links { display: none; } /* Simpele verberging voor nu */
-            .privacy-box { padding: 30px; }
-            .privacy li { font-size: 16px; }
-        }
-    </style>
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero, #services, #stats, #cta-section { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .glass-box { flex-direction: column; padding: 2.5rem 1.5rem; }
+      footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <div class="container">
-            <nav>
-                <a href="#" class="logo">Black <span>M</span></a>
-                <ul class="nav-links">
-                    <li><a href="#features">Werking</a></li>
-                    <li><a href="#privacy">Privacy</a></li>
-                    <li><a href="#contact">Beta Toegang</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="bg-canvas"></canvas>
 
-    <section class="hero">
-        <div class="container">
-            <h1>Continu <span>NIS2</span>-Monitoring<br>voor MKB Nederland</h1>
-            <p>Black M biedt rust en compliance. Een 'always-on' security agent die uw systemen bewaakt, zonder de privacy van uw medewerkers te schenden.</p>
-            <a href="#contact" class="btn">Vraag Beta Toegang Aan</a>
-        </div>
-    </section>
+  <nav>
+    <div class="logo">BLACK<span>M</span></div>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#stats">Resultaten</a>
+      <a href="#cta-section">Contact</a>
+    </div>
+  </nav>
 
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Nuchtere Security. Schaalbare Compliance.</h2>
-            <div class="feature-grid">
-                
-                <div class="feature-card">
-                    <div class="feature-icon">🛡️</div>
-                    <h3>Always-On Monitoring</h3>
-                    <p>Onze lichtgewicht agent draait onzichtbaar op de achtergrond. Het detecteert afwijkend gedrag, ransomware-patronen en kwetsbaarheden in real-time.</p>
-                </div>
+  <section id="hero">
+    <div class="hero-label">Est. 2024 — NIS2 Specialists</div>
+    <h1 class="hero-title">
+      MONITORING<br/>
+      THE <span class="accent">FABRIC</span><br/>
+      <span class="stroke">OF YOUR</span><br/>
+      WORKFLOW.
+    </h1>
+    <p class="hero-sub">AI-gedreven NIS2-compliance voor MKB Nederland. Proactief. Autonoom. Onfeilbaar.</p>
+    <form class="cta-form" id="hero-form">
+      <input type="email" id="email-input" placeholder="uw@bedrijf.nl" autocomplete="off" />
+      <button type="submit">Activeer →</button>
+    </form>
+    <div class="scroll-indicator">
+      <div class="scroll-pulse"></div>Scroll
+    </div>
+  </section>
 
-                <div class="feature-card">
-                    <div class="feature-icon">📝</div>
-                    <h3>Directe NIS2 Rapporten</h3>
-                    <p>Voldoe direct aan de belangrijkste NIS2-beheersmaatregelen. Genereer met één druk op de knop rapportages over encryptie-status, toegangsbeheer en back-up integriteit.</p>
-                </div>
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span class="hi">NIS2 Compliance</span><span>◆</span>
+      <span>Zero-Trust Architecture</span><span>◆</span>
+      <span>AI Threat Detection</span><span>◆</span>
+      <span class="hi">MKB Nederland</span><span>◆</span>
+      <span>Incident Response</span><span>◆</span>
+      <span>Vulnerability Management</span><span>◆</span>
+      <span>SOC-as-a-Service</span><span>◆</span>
+      <span class="hi">24/7 Monitoring</span><span>◆</span>
+      <span class="hi">NIS2 Compliance</span><span>◆</span>
+      <span>Zero-Trust Architecture</span><span>◆</span>
+      <span>AI Threat Detection</span><span>◆</span>
+      <span class="hi">MKB Nederland</span><span>◆</span>
+      <span>Incident Response</span><span>◆</span>
+      <span>Vulnerability Management</span><span>◆</span>
+      <span>SOC-as-a-Service</span><span>◆</span>
+      <span class="hi">24/7 Monitoring</span><span>◆</span>
+    </div>
+  </div>
 
-                <div class="feature-card">
-                    <div class="feature-icon">👁️‍🗨️</div>
-                    <h3>Zero-Touch Onboarding</h3>
-                    <p>Geen complexe implementatietrajecten. Download de agent, installeer binnen 1 minuut, en uw 'Single Pane of Glass' dashboard is direct actief.</p>
-                </div>
+  <section id="services">
+    <p class="section-label reveal">/ Wat wij doen</p>
+    <h2 class="section-title reveal">Digitale weerbaarheid.<br/>Gebouwd voor schaal.</h2>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="card-bar"></div>
+        <p class="card-number">01 —</p>
+        <h3 class="card-title">NIS2 Compliance Audit</h3>
+        <p class="card-desc">Geautomatiseerde gap-analyse van uw beveiligingspositie. Volledig rapport binnen 48 uur.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="card-bar"></div>
+        <p class="card-number">02 —</p>
+        <h3 class="card-title">AI Threat Intelligence</h3>
+        <p class="card-desc">Continue monitoring via ML-modellen die afwijkingen in real-time detecteren en classificeren.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="card-bar"></div>
+        <p class="card-number">03 —</p>
+        <h3 class="card-title">Incident Response</h3>
+        <p class="card-desc">24/7 reactieteam met geautomatiseerde containment-protocollen. Responstijd &lt;12 minuten.</p>
+      </div>
+      <div class="service-card reveal">
+        <div class="card-bar"></div>
+        <p class="card-number">04 —</p>
+        <h3 class="card-title">Zero-Trust Implementatie</h3>
+        <p class="card-desc">Architectuurontwerp en implementatie van zero-trust netwerken en microsegmentatie.</p>
+      </div>
+    </div>
+  </section>
 
-            </div>
-        </div>
-    </section>
+  <section id="stats">
+    <div class="stats-grid">
+      <div class="reveal">
+        <div class="stat-number"><span class="count" data-target="98">0</span><em>%</em></div>
+        <div class="stat-label">Compliance Rate</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number"><em>&lt;</em><span class="count" data-target="12">0</span><em>m</em></div>
+        <div class="stat-label">Responstijd</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number"><span class="count" data-target="200">0</span><em>+</em></div>
+        <div class="stat-label">MKB Klanten</div>
+      </div>
+      <div class="reveal">
+        <div class="stat-number"><span class="count" data-target="24">0</span><em>/7</em></div>
+        <div class="stat-label">Actieve Monitoring</div>
+      </div>
+    </div>
+  </section>
 
-    <section id="privacy" class="privacy">
-        <div class="container">
-            <div class="privacy-box">
-                <h2>Het Black M Privacy Manifest</h2>
-                <p style="color: #a0a0a0; margin-bottom: 30px;">Cybersecurity mag nooit ten koste gaan van privacy. Wij monitoren processen, geen personen.</p>
-                <ul>
-                    <li><strong>Lokale Anonimisering:</strong> PII (persoonsgegevens) worden op het endpoint gehasht voordat ze uw netwerk verlaten.</li>
-                    <li><strong>Geen Keylogging of Vertrouwelijk Inzicht:</strong> Wij kijken naar *hoe* systemen werken, nooit naar *wat* uw medewerkers typen of lezen.</li>
-                    <li><strong>Transparante Data-minimalisatie:</strong> Wij verzamelen alleen de metadata die strikt noodzakelijk is voor security-analyse.</li>
-                    <li><strong>EU-Hosting:</strong> Uw geanonimiseerde security-data blijft veilig binnen de Europese Unie.</li>
-                </ul>
-            </div>
-        </div>
-    </section>
+  <section id="cta-section">
+    <div class="glass-box reveal">
+      <h2 class="cta-big-title">Klaar voor<br/><span>NIS2-compliant</span><br/>te worden?</h2>
+      <a href="mailto:info@blackm.nl" class="cta-big-btn">Start Vandaag →</a>
+    </div>
+  </section>
 
-    <section id="contact" class="cta">
-        <div class="container">
-            <div class="form-box">
-                <h2 class="section-title">Word Early Adopter</h2>
-                <p>We selecteren momenteel 10 MKB-bedrijven voor ons exclusieve Beta-programma. Krijg als eerste toegang en vorm de toekomst van Black M.</p>
-                
-                <form>
-                    <input type="email" placeholder="Uw zakelijke e-mailadres" required>
-                    <button type="submit" class="btn">Meld mij aan voor de Beta</button>
-                </form>
-            </div>
-        </div>
-    </section>
+  <footer>
+    <p class="footer-copy">© 2025 <span>BLACK M</span> — Cybersecurity B.V. | Amsterdam, NL</p>
+    <p class="footer-copy"><span>info@blackm.nl</span></p>
+  </footer>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 Black M (blackm.nl). Alle rechten voorbehouden.</p>
-            <p style="font-size: 12px; margin-top: 10px;">Privacy by Design | Gebouwd in Nederland</p>
-        </div>
-    </footer>
+  <div id="toast">✓ We nemen spoedig contact op.</div>
 
+  <script>
+  // ── Cursor ────────────────────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring   = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  });
+  (function loop() {
+    rx += (mx - rx) * 0.1; ry += (my - ry) * 0.1;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+  document.querySelectorAll('a,button,input').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+      ring.style.borderColor = 'rgba(79,142,247,0.7)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1.4)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.borderColor = 'rgba(79,142,247,0.35)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  // ── Three.js: Stars + Globe ───────────────────────────────
+  (function() {
+    const canvas   = document.getElementById('bg-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 500);
+    camera.position.z = 3.2;
+
+    // Stars — static, cheap
+    const N = 2000;
+    const sp = new Float32Array(N * 3);
+    for (let i = 0; i < N * 3; i++) sp[i] = (Math.random() - 0.5) * 200;
+    const sGeo = new THREE.BufferGeometry();
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+    scene.add(new THREE.Points(sGeo,
+      new THREE.PointsMaterial({ color: 0xffffff, size: 0.18, transparent: true, opacity: 0.5 })
+    ));
+
+    // Globe group — placed right-center
+    const group = new THREE.Group();
+    group.position.x = 1.7;
+    scene.add(group);
+
+    // Dark inner sphere
+    group.add(new THREE.Mesh(
+      new THREE.SphereGeometry(1, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0x01050f })
+    ));
+
+    // Wireframe overlay
+    group.add(new THREE.Mesh(
+      new THREE.SphereGeometry(1.002, 34, 34),
+      new THREE.MeshBasicMaterial({ color: 0x4f8ef7, wireframe: true, transparent: true, opacity: 0.12 })
+    ));
+
+    // Atmosphere
+    group.add(new THREE.Mesh(
+      new THREE.SphereGeometry(1.09, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0x1a4fd6, transparent: true, opacity: 0.06, side: THREE.FrontSide })
+    ));
+
+    // Equatorial ring
+    const ringMesh = new THREE.Mesh(
+      new THREE.TorusGeometry(1.38, 0.003, 4, 100),
+      new THREE.MeshBasicMaterial({ color: 0x4f8ef7, transparent: true, opacity: 0.18 })
+    );
+    ringMesh.rotation.x = Math.PI / 2.2;
+    group.add(ringMesh);
+
+    // Orbit dot
+    const orbitDot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.018, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0x7fb3ff })
+    );
+    scene.add(orbitDot);
+
+    // Mouse parallax
+    let mxN = 0, myN = 0;
+    document.addEventListener('mousemove', e => {
+      mxN = (e.clientX / window.innerWidth  - 0.5) * 2;
+      myN = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    let t = 0, oa = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      t  += 0.004;
+      oa += 0.003;
+      group.rotation.y = t * 0.22;
+
+      // Orbit dot
+      const r = 1.38;
+      const rx2 = Math.PI / 2.2;
+      orbitDot.position.x = group.position.x + Math.cos(oa) * r;
+      orbitDot.position.y = Math.sin(oa) * r * Math.cos(rx2);
+      orbitDot.position.z = Math.sin(oa) * r * Math.sin(rx2);
+
+      camera.position.x += (mxN * 0.12 - camera.position.x) * 0.025;
+      camera.position.y += (-myN * 0.08 - camera.position.y) * 0.025;
+      camera.lookAt(1.7, 0, 0);
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  })();
+
+  // ── GSAP ─────────────────────────────────────────────────
+  gsap.registerPlugin(ScrollTrigger);
+  gsap.fromTo('.hero-label', { opacity:0, y:16 }, { opacity:1, y:0, duration:0.9, delay:0.4, ease:'power3.out' });
+  gsap.fromTo('.hero-title', { opacity:0, y:55, skewY:1.5 }, { opacity:1, y:0, skewY:0, duration:1.2, delay:0.6, ease:'power4.out' });
+  gsap.fromTo('.hero-sub',   { opacity:0, y:25 }, { opacity:1, y:0, duration:1.0, delay:1.0, ease:'power3.out' });
+  gsap.fromTo('.cta-form',   { opacity:0, y:18 }, { opacity:1, y:0, duration:0.8, delay:1.2, ease:'power3.out' });
+
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    gsap.fromTo(el, { opacity:0, y:45 }, {
+      opacity:1, y:0, duration:0.85, ease:'power3.out',
+      delay: (i % 4) * 0.08,
+      scrollTrigger: { trigger: el, start: 'top 86%', toggleActions: 'play none none none' }
+    });
+  });
+
+  document.querySelectorAll('.count[data-target]').forEach(el => {
+    const target = parseInt(el.getAttribute('data-target'));
+    ScrollTrigger.create({
+      trigger: el, start: 'top 82%',
+      onEnter: () => {
+        gsap.to({ val: 0 }, {
+          val: target, duration: 1.6, ease: 'power2.out',
+          onUpdate: function() { el.textContent = Math.round(this.targets()[0].val); }
+        });
+      }
+    });
+  });
+
+  // ── Form ─────────────────────────────────────────────────
+  document.getElementById('hero-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) return;
+    window.location.href = `mailto:info@blackm.nl?subject=${encodeURIComponent('NIS2 aanvraag — Black M')}&body=${encodeURIComponent('Lead: ' + email)}`;
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+    document.getElementById('email-input').value = '';
+  });
+  </script>
 </body>
 </html>
