@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black M | Continue NIS2-Monitoring voor MKB</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --bg-color: #0a0a0c; /* Bijna zwart, zeer donkergrijs */
+            --text-color: #e0e0e0;
+            --accent-color: #00ff41; /* 'Matrix' Groen - straalt techniek en actie uit */
+            --secondary-bg: #141417;
+            --border-color: #2a2a30;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Container voor nette uitlijning */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Header / Navigatie --- */
+        header {
+            background-color: rgba(10, 10, 12, 0.95);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--accent-color);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* --- Hero Sectie (Boven de vouw) --- */
+        .hero {
+            padding: 180px 0 100px; /* Extra padding boven voor de vaste header */
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1a22 0%, #0a0a0c 70%);
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .hero h1 span {
+            color: var(--accent-color);
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: #a0a0a0;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: var(--accent-color);
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 65, 0.4);
+        }
+
+        /* --- Features / Waarde Sectie --- */
+        .features {
+            padding: 100px 0;
+            background-color: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background-color: var(--bg-color);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-color);
+        }
+
+        .feature-icon {
+            font-size: 30px;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: #a0a0a0;
+            font-size: 16px;
+        }
+
+        /* --- Privacy Manifest Sectie --- */
+        .privacy {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .privacy-box {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--secondary-bg);
+            padding: 50px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .privacy-box::before {
+            content: 'SECURE';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--accent-color);
+            color: #000;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+        }
+
+        .privacy h2 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .privacy ul {
+            list-style: none;
+            text-align: left;
+            display: inline-block;
+        }
+
+        .privacy li {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .privacy li::before {
+            content: '✓';
+            color: var(--accent-color);
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        /* --- Call to Action / Formulier --- */
+        .cta {
+            padding: 100px 0;
+            background-color: var(--secondary-bg);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .form-box {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-box p {
+            margin-bottom: 30px;
+            color: #a0a0a0;
+            font-size: 18px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="email"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* --- Mobiele Responsive Aanpassingen --- */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 32px; }
+            .hero p { font-size: 18px; }
+            .nav-links { display: none; } /* Simpele verberging voor nu */
+            .privacy-box { padding: 30px; }
+            .privacy li { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">Black <span>M</span></a>
+                <ul class="nav-links">
+                    <li><a href="#features">Werking</a></li>
+                    <li><a href="#privacy">Privacy</a></li>
+                    <li><a href="#contact">Beta Toegang</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Continu <span>NIS2</span>-Monitoring<br>voor MKB Nederland</h1>
+            <p>Black M biedt rust en compliance. Een 'always-on' security agent die uw systemen bewaakt, zonder de privacy van uw medewerkers te schenden.</p>
+            <a href="#contact" class="btn">Vraag Beta Toegang Aan</a>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Nuchtere Security. Schaalbare Compliance.</h2>
+            <div class="feature-grid">
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Always-On Monitoring</h3>
+                    <p>Onze lichtgewicht agent draait onzichtbaar op de achtergrond. Het detecteert afwijkend gedrag, ransomware-patronen en kwetsbaarheden in real-time.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Directe NIS2 Rapporten</h3>
+                    <p>Voldoe direct aan de belangrijkste NIS2-beheersmaatregelen. Genereer met één druk op de knop rapportages over encryptie-status, toegangsbeheer en back-up integriteit.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">👁️‍🗨️</div>
+                    <h3>Zero-Touch Onboarding</h3>
+                    <p>Geen complexe implementatietrajecten. Download de agent, installeer binnen 1 minuut, en uw 'Single Pane of Glass' dashboard is direct actief.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="privacy" class="privacy">
+        <div class="container">
+            <div class="privacy-box">
+                <h2>Het Black M Privacy Manifest</h2>
+                <p style="color: #a0a0a0; margin-bottom: 30px;">Cybersecurity mag nooit ten koste gaan van privacy. Wij monitoren processen, geen personen.</p>
+                <ul>
+                    <li><strong>Lokale Anonimisering:</strong> PII (persoonsgegevens) worden op het endpoint gehasht voordat ze uw netwerk verlaten.</li>
+                    <li><strong>Geen Keylogging of Vertrouwelijk Inzicht:</strong> Wij kijken naar *hoe* systemen werken, nooit naar *wat* uw medewerkers typen of lezen.</li>
+                    <li><strong>Transparante Data-minimalisatie:</strong> Wij verzamelen alleen de metadata die strikt noodzakelijk is voor security-analyse.</li>
+                    <li><strong>EU-Hosting:</strong> Uw geanonimiseerde security-data blijft veilig binnen de Europese Unie.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="cta">
+        <div class="container">
+            <div class="form-box">
+                <h2 class="section-title">Word Early Adopter</h2>
+                <p>We selecteren momenteel 10 MKB-bedrijven voor ons exclusieve Beta-programma. Krijg als eerste toegang en vorm de toekomst van Black M.</p>
+                
+                <form>
+                    <input type="email" placeholder="Uw zakelijke e-mailadres" required>
+                    <button type="submit" class="btn">Meld mij aan voor de Beta</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Black M (blackm.nl). Alle rechten voorbehouden.</p>
+            <p style="font-size: 12px; margin-top: 10px;">Privacy by Design | Gebouwd in Nederland</p>
+        </div>
+    </footer>
+
+</body>
+</html>
